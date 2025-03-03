@@ -4,9 +4,30 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 from functools import reduce
+import numpy
 
 matplotlib.use('TkAgg')  #  'Agg' or 'Qt5Agg'
+def api_fetch(link):
+    try:
+        url=link #gotta be left merge, stocks api has only 250 days back. so to match correctly stock df will be left DF.
+        response=requests.get(link)
+        response.raise_for_status()
+        api_json=response.json()
+        return api_json
+    except requests.exceptions.RequestException as e:
+        print(f'Error handling: {e}')
+        return None
+usd=api_fetch(f'https://api.nbp.pl/api/exchangerates/rates/a/usd/last/255/?format=json')
+gbp=api_fetch(f'https://api.nbp.pl/api/exchangerates/rates/a/gbp/last/255/?format=json')
 
+print(usd)
+
+def to_df(json):
+    df_currency= pd.DataFrame(json['rates'])
+    df_currency=df_currency.rename(columns={"effectiveDate":"date"}).drop(columns='no')
+    return df_currency
+usd_df=to_df(usd)
+gbp_df=to_df(gbp)
 def api_fetch(demo_url):
     #demo_url=f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json'
         try:
@@ -17,6 +38,9 @@ def api_fetch(demo_url):
         except requests.exceptions.RequestException as e:
             print(f'Error fetching data: {e}')
             return None
+#pekabex=api_fetch(f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json')
+#wig20=api_fetch(f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json')
+#nasdaq100=api_fetch(f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json')
 pekabex=api_fetch(f'https://eodhd.com/api/eod/PBX.WAR?from=2024-01-01&period=d&api_token= 67baee1cc05d29.18192653&fmt=json')
 wig20=api_fetch(f'https://eodhd.com/api/eod/ETFBW20TR.WAR?from=2024-01-01&period=d&api_token= 67baee1cc05d29.18192653&fmt=json')
 nasdaq100=api_fetch(f'https://eodhd.com/api/eod/CNDX.AS?from=2024-01-01&period=d&api_token= 67baee1cc05d29.18192653&fmt=json')
@@ -87,32 +111,47 @@ print(portfolio_conn())
     plt.show()
     return my
     """
+def calculate_exchange_rate(row):
+    if row['currency'] =='PLN':
+        return 1
+    elif row['currency'] =='USD':
+        return row['mid']
+    elif row['currency']=='GBP':
+        return row['mid_gbp']
+    else:
+        return numpy.nan
 def merg_JSON(json_df, ticker):
-    """merges json_df and dataframe with shares volume on date. all is seperate - no loop """
+    """merges json_df and dataframe with shares volume on date. all is seperated - no loop """
     """adjusting currency"""
     filtered_port=portfolio_conn()[(portfolio_conn()['ticker']==ticker)]
     final=json_df.iloc[:,[0,4]]
     nfinal=pd.merge(final,filtered_port,on='date', how='left')
     nfinal['sum_on_date']=nfinal['sum_on_date'].ffill()  #it fills all cells beneath with the last provided value in sum_on_date column
     nfinal['currency']=nfinal['currency'].ffill() #it fills all cells beneath with the last provided value in currency column
-    nfinal['currency_value']=nfinal.apply()
-    nfinal['value']=nfinal['close']*nfinal['sum_on_date'] #value of all shares per asset
-    #nfinal['value']=nfinal.apply(lambda x: if)
-    #final=wig20.iloc[:,[0,4]]
-    #nfinal.plot(x='date', y='value')
-    #plt.show()
+    nfinal = pd.merge(nfinal, usd_df, on='date', how='left', suffixes=('', '_usd'))
+    nfinal = pd.merge(nfinal, gbp_df, on='date', how='left', suffixes=('', '_gbp'))
+    nfinal['exchange_rate']=nfinal.apply(calculate_exchange_rate, axis=1)
+    nfinal=nfinal.drop(columns=['mid','mid_gbp'])
+    #nfinal['exchange_rate']=nfinal['currency'].apply(lambda x: usd_df['mid'] if x=='USD' else 1)
+    #nfinal['currency_value']=nfinal['currency'].apply(lambda x: pd.merge(nfinal, usd_df, on='date', how='left') if x=='USD' elif x=='GBP' pd.merge(nfinal,gbp_df, on='date',how='left')  else x=1)
+    nfinal['value']=nfinal['close']*nfinal['sum_on_date']*nfinal['exchange_rate'] #value of all shares per asset
+    pd.set_option('display.width', 1000)
+    nfinal
     return nfinal #.groupby('sum_on_date').sum()
 df_pekabex=merg_JSON(pekabex,'pekabex')
 df_wig20=merg_JSON(wig20,'wig20')
 df_nasdaq100=merg_JSON(nasdaq100,'nasdaq100')
+print(f'to jest merg_json_nasdaq: {df_nasdaq100}')
 list_dataframes=[df_pekabex,df_wig20,df_nasdaq100]
+
 def moje_portfolio():
     """it merges all positions into one Dataframe. Then it Displays NOMINAL value of portfolio"""
-    my=reduce(lambda left, right: pd.merge(left,right, on='date', how='left'),list_dataframes)
+    my=reduce(lambda left, right: pd.merge(left,right, on='date', how='left'),list_dataframes) #merge ensures that all rows from the "left" DataFrame are included in the result.
     #my=pd.merge(df_pekabex,df_wig20, df_nasdaq100, on='date',how='left') #trzeba mergować kilka na raz
-    my['all_stocks_value']=my.iloc[:,7::7].sum(axis=1) #it sums every 6th column startiing from 6th(value
+    my['all_stocks_value']=my.iloc[:,8::8].sum(axis=1) #it sums every 6th column startiing from 6th(value
     #my['all_stocks_value']=my['value_x']+my['value_y'] #summing value of each position/purchase/sell to 1 column over the days
     pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', 1000)
     my
     print(my)
     my.plot(x='date',y='all_stocks_value')
