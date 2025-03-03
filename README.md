@@ -9,4 +9,7 @@ Purpose: To develop an investment portfolio tracking application.
 
 ## Ideas for the future
 * Machine learning implementation for price prediction.
-* feature: includes profit rate comparing money invested to current value of portfolio
+* feature:
+          - includes profit rate comparing money invested to current value of portfolio
+          - chart without currency adjustment
+  
