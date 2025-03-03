@@ -29,7 +29,6 @@ def to_df(json):
 usd_df=to_df(usd)
 gbp_df=to_df(gbp)
 def api_fetch(demo_url):
-    #demo_url=f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json'
         try:
             response=requests.get(demo_url)
             response.raise_for_status()
