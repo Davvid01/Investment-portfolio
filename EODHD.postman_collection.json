@@ -1,0 +1,137 @@
+{
+	"info": {
+		"_postman_id": "0b56ecd4-217d-4b3e-92a2-89511adfdf6f",
+		"name": "EODHD",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32004829"
+	},
+	"item": [
+		{
+			"name": "DEMO only",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Pekabex",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "WIG20",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "WIG40",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "nasdaq100",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://eodhd.com/api/eod/CNDX.lse?from=2024-01-01&period=d&api_token= 67baee1cc05d29.18192653&fmt=json",
+					"protocol": "https",
+					"host": [
+						"eodhd",
+						"com"
+					],
+					"path": [
+						"api",
+						"eod",
+						"CNDX.lse"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "2024-01-01"
+						},
+						{
+							"key": "period",
+							"value": "d"
+						},
+						{
+							"key": "api_token",
+							"value": " 67baee1cc05d29.18192653"
+						},
+						{
+							"key": "fmt",
+							"value": "json"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Semiconductor",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "MSCI China",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "AI & BIG DATA",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Digitalization",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Uranium miners",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "XTB",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "CD Projekt",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
