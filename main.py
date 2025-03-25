@@ -65,11 +65,6 @@ def opening(file):
         except json.JSONDecodeError as e:
             print("Bład parsowania JSON: ", e)
         print(type(data))
-#pekabex=opening('API Pekabex.txt')
-#wig20=opening('etfbw20TR.WAR.txt')
-
-#print(pekabex)
-#print(type(pekabex))
 
 def to_df(df):
     ndf=pd.DataFrame(df)
@@ -88,11 +83,6 @@ uranium=to_df(uranium)
 xtb=to_df(xtb)
 cd_projekt=to_df(cd_projekt)
 
-"""
-pekabex.plot(x='date', y='close')
-wig20.plot(x='date', y='close')
-plt.show()
-"""
 def portfolio_quartelly(): #all records by/sell for quarter portfolio
     """Zwraca DataFrame z historią transakcji (kupna/sprzedaży)."""
     pkbd = [{'date': '2024-04-03', 'volume': 5, 'operation': 'buy', 'ticker': 'pekabex', 'currency':'PLN'},
@@ -123,16 +113,7 @@ def portfolio_conn():
     connector['sum_on_date'] = connector.groupby('ticker')['volume'].cumsum()
     return connector
 print(portfolio_conn())
-"""
-    my=pd.DataFrame(columns=['date','close','volume'])
-    my['close']=pekabex['close']+wig20['close']
-    my['date']=pekabex['date']
-    #my=pd.merge([])
-    print(my.head())
-    my.plot(x='date', y='close')
-    plt.show()
-    return my
-    """
+
 def calculate_exchange_rate(row):
     if row['currency'] =='PLN':
         return 1
@@ -184,7 +165,7 @@ def moje_portfolio():
     """it merges all positions into one Dataframe. Then it Displays NOMINAL value of portfolio"""
     my=reduce(lambda left, right: pd.merge(left,right, on='date', how='left'),list_dataframes) #merge ensures that all rows from the "left" DataFrame are included in the result.
     #my=pd.merge(df_pekabex,df_wig20, df_nasdaq100, on='date',how='left') #trzeba mergować kilka na raz
-    my['all_stocks_value']=my.iloc[:,8::8].sum(axis=1) #it sums every 8th column startiing from 8th(value
+    my['all_stocks_value']=my.iloc[:,8::8].sum(axis=1) #it sums every 8th column startiing from 9th(value
     #my['all_stocks_value']=my['value_x']+my['value_y'] #summing value of each position/purchase/sell to 1 column over the days
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', 1000)
@@ -194,7 +175,6 @@ def moje_portfolio():
     plt.show()
     my.to_excel('C:\Dawid\Szkola\studia\ostatni_rozdzial\Github\Stock chart\ all_values.xlsx', sheet_name='Dane do wykresu')
     return my
-    #my.plot(x='date',y='value')
-    #plt.show()
+
 print(moje_portfolio())
 
