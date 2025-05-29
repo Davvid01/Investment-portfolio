@@ -1,13 +1,14 @@
-import requests
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
 from functools import reduce
 import numpy
-
+import requests
 matplotlib.use('TkAgg')  #  'Agg' or 'Qt5Agg'
+
 def api_fetch(link):
+    """pobranie API"""
     try:
         url=link #gotta be left merge, stocks api has only 250 days back. so to match correctly stock df will be left DF.
         response=requests.get(link)
@@ -23,11 +24,14 @@ gbp=api_fetch(f'https://api.nbp.pl/api/exchangerates/rates/a/gbp/last/255/?forma
 print(usd)
 
 def to_df(json):
+    """to DF NBP"""
     df_currency= pd.DataFrame(json['rates'])
     df_currency=df_currency.rename(columns={"effectiveDate":"date"}).drop(columns='no')
     return df_currency
 usd_df=to_df(usd)
 gbp_df=to_df(gbp)
+
+"""
 def api_fetch(demo_url):
         try:
             response=requests.get(demo_url)
@@ -37,7 +41,7 @@ def api_fetch(demo_url):
         except requests.exceptions.RequestException as e:
             print(f'Error fetching data: {e}')
             return None
-"""
+
 pekabex=api_fetch(f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json')
 wig20=api_fetch(f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json')
 nasdaq100=api_fetch(f'https://eodhd.com/api/eod/AAPL.US?from=2024-01-01&period=d&api_token=DEMO&fmt=json')
@@ -53,9 +57,9 @@ digitalization=api_fetch(f'https://eodhd.com/api/eod/DGTL.LSE?from=2024-01-01&pe
 uranium=api_fetch(f'https://eodhd.com/api/eod/U3O8.XETRA?from=2024-01-01&period=d&api_token= 67baee1cc05d29.18192653&fmt=json')
 xtb=api_fetch(f'https://eodhd.com/api/eod/XTB.WAR?from=2024-01-01&period=d&api_token= 67baee1cc05d29.18192653&fmt=json')
 cd_projekt=api_fetch(f'https://eodhd.com/api/eod/CDR.WAR?from=2024-01-01&period=d&api_token= 67baee1cc05d29.18192653&fmt=json')
-
+"""
 def opening(file):
-    """fetching from notebook as json type for tests"""
+    #fetching from notebook as json type for tests
     with open(f'{file}', 'r', encoding='utf-8') as f:
         content = f.read()
         try:
@@ -65,7 +69,7 @@ def opening(file):
         except json.JSONDecodeError as e:
             print("Bład parsowania JSON: ", e)
         print(type(data))
-
+"""
 def to_df(df):
     ndf=pd.DataFrame(df)
     ndf = ndf.drop('warning', axis=1, errors='ignore')  # required to specify row=-0 or column=1
